@@ -15,11 +15,13 @@ public class UserPointTable {
 
     private final Map<Long, UserPoint> table = new HashMap<>();
 
+    // 사용자 Id 기반 데이터 조회
     public UserPoint selectById(Long id) {
         throttle(200);
         return table.getOrDefault(id, UserPoint.empty(id));
     }
 
+    // USER POINT 삽입 함수
     public UserPoint insertOrUpdate(long id, long amount) {
         throttle(300);
         UserPoint userPoint = new UserPoint(id, amount, System.currentTimeMillis());
