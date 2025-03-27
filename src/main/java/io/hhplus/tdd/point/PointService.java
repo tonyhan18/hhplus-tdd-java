@@ -30,12 +30,9 @@ public class PointService {
         if(userPoint == null){
             userPoint = UserPoint.empty(userId);
         }
-        userPoint.chkForValidate(TransactionType.CHARGE, chargeAmount);
-
-        // updating
-        long updatedPoint = userPoint.point();
-        updatedPoint += chargeAmount;
-        userPoint = userPointTable.insertOrUpdate(userId, updatedPoint);
+        ///  DDD work
+        userPoint = userPoint.charge(userPoint, chargeAmount);
+        userPoint = userPointTable.insertOrUpdate(userId, userPoint.point());
 
         // recording
         pointHistoryTable.insert(userId, chargeAmount, TransactionType.CHARGE, System.currentTimeMillis());
@@ -50,10 +47,9 @@ public class PointService {
         }
         userPoint.chkForValidate(TransactionType.USE, useAmount);
 
-        // updating
-        long updatedPoint = userPoint.point();
-        updatedPoint -= useAmount;
-        userPoint = userPointTable.insertOrUpdate(userId, updatedPoint);
+        // DDD
+        userPoint = userPoint.use(userPoint, useAmount);
+        userPoint = userPointTable.insertOrUpdate(userId, userPoint.point());
 
         // recording
         pointHistoryTable.insert(userId, useAmount, TransactionType.USE, System.currentTimeMillis());

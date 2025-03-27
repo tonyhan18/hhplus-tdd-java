@@ -36,7 +36,6 @@ public class PointServiceTest {
     @Nested
     @DisplayName("포인트 충전 검증 단위 테스트")
     class ChargingPointTest {
-
         @Test
         @DisplayName("chargePointById가 포인트 충전 요청을 성공적으로 처리하는지 단위 테스트")
         void testChargePointById_success() {
@@ -61,6 +60,37 @@ public class PointServiceTest {
             verify(userPointTable).selectById(eq(userId));
             verify(userPointTable).insertOrUpdate(eq(userId), eq(initialPoint + chargeAmount));
             verify(pointHistoryTable).insert(eq(userId), eq(chargeAmount), eq(CHARGE), anyLong());
+        }
+    }
+
+    @Nested
+    @DisplayName("포인트 사용 검증 단위 테스트")
+    class UsingPointTest {
+
+        @Test
+        @DisplayName("usePointById가 포인트 사용 요청을 성공적으로 처리하는지 단위 테스트")
+        void testUsePointById_success() {
+            // Given
+            long userId = 1L;
+            long initialPoint = 100L;
+            long useAmount = 30L;
+            UserPoint originalPoint = new UserPoint(userId, initialPoint, System.currentTimeMillis());
+            UserPoint updatedPoint = new UserPoint(userId, initialPoint - useAmount, System.currentTimeMillis());
+
+            when(userPointTable.selectById(eq(userId))).thenReturn(originalPoint);
+            when(userPointTable.insertOrUpdate(eq(userId), eq(initialPoint - useAmount))).thenReturn(updatedPoint);
+
+            // When
+            UserPoint result = pointService.usePointById(userId, useAmount);
+
+            // Then
+            assertNotNull(result);
+            assertEquals(userId, result.id());
+            assertEquals(initialPoint - useAmount, result.point());
+
+            verify(userPointTable).selectById(eq(userId));
+            verify(userPointTable).insertOrUpdate(eq(userId), eq(initialPoint - useAmount));
+            verify(pointHistoryTable).insert(eq(userId), eq(useAmount), eq(USE), anyLong());
         }
     }
 }

@@ -1,6 +1,7 @@
 package io.hhplus.tdd.point;
 
 import lombok.val;
+import org.apache.catalina.User;
 
 public record UserPoint(
         long id,
@@ -32,5 +33,19 @@ public record UserPoint(
                 }
             }
         }
+    }
+
+    /// Charging
+    public UserPoint charge(UserPoint userPoint, long amount)
+    {
+        chkForValidate(TransactionType.CHARGE, amount);
+        return new UserPoint(userPoint.id, userPoint.point + amount, System.currentTimeMillis());
+    }
+
+    /// Using
+    public UserPoint use(UserPoint userPoint, long amount)
+    {
+        chkForValidate(TransactionType.USE, amount);
+        return new UserPoint(userPoint.id, userPoint.point - amount, System.currentTimeMillis());
     }
 }
