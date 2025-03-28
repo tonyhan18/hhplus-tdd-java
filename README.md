@@ -96,7 +96,7 @@ public UserPoint chargePointById(long userId, long chargeAmount) {
   ReentrantLock lock = lockManager.getLock(userId); // 1. 락 획득 시도
   lock.lock(); // 2. 코드 락 걸기
   try{
-    ...
+    //...
   } finally {
     lock.unlock(); // 완료 후 락 해제
   }
