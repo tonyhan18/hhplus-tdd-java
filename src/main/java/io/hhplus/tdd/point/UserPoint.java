@@ -9,7 +9,7 @@ public record UserPoint(
         long updateMillis
 ) {
 
-    // 1억
+    // TODO : 테스트를 위해 10000으로 고정, 이후 수정 가능
     private static final long maxPoint = 10000L;
     public static UserPoint empty(long id) {
         return new UserPoint(id, 0, System.currentTimeMillis());

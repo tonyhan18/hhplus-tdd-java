@@ -10,6 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static io.hhplus.tdd.point.TransactionType.*;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -23,7 +25,9 @@ public class PointServiceTest {
 
     @Mock
     private PointHistoryTable pointHistoryTable;
-    
+
+    @Mock
+    private LockManager lockManager;
     /**
      * InjectMocks : **테스트 대상 클래스에 Mock 객체를 주입**
      * - 테스트하려는 클래스 인스턴스를 생성하고, 
@@ -46,6 +50,7 @@ public class PointServiceTest {
             UserPoint originalPoint = new UserPoint(userId, initialPoint, System.currentTimeMillis());
             UserPoint updatedPoint = new UserPoint(userId, initialPoint + chargeAmount, System.currentTimeMillis());
 
+            when(lockManager.getLock(userId)).thenReturn(new ReentrantLock()); // 추가 : 락을 획득하는지 체크
             when(userPointTable.selectById(eq(userId))).thenReturn(originalPoint);
             when(userPointTable.insertOrUpdate(eq(userId), eq(initialPoint + chargeAmount))).thenReturn(updatedPoint);
 
@@ -77,6 +82,7 @@ public class PointServiceTest {
             UserPoint originalPoint = new UserPoint(userId, initialPoint, System.currentTimeMillis());
             UserPoint updatedPoint = new UserPoint(userId, initialPoint - useAmount, System.currentTimeMillis());
 
+            when(lockManager.getLock(userId)).thenReturn(new ReentrantLock()); // 추가 : 락을 획득하는지 체크
             when(userPointTable.selectById(eq(userId))).thenReturn(originalPoint);
             when(userPointTable.insertOrUpdate(eq(userId), eq(initialPoint - useAmount))).thenReturn(updatedPoint);
 
